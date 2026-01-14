@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nude & Glow | Premium Beauty</title>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* === THEME === */
+        :root { --bg: #FAF9F6; --primary: #Cfb096; --accent: #5D4037; --white: #FFFFFF; --glass: rgba(255, 255, 255, 0.95); }
+        body { background-color: var(--bg); color: #3E2723; font-family: 'Poppins', sans-serif; margin: 0; overflow-x: hidden; padding-bottom: 80px; }
+        
+        /* === FLOATING MESSENGER BUTTON (NEW) === */
+        .floating-chat-btn {
+            position: fixed; bottom: 90px; right: 20px;
+            width: 55px; height: 55px;
+            background: var(--accent); color: white;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem; cursor: pointer; z-index: 1000;
+            box-shadow: 0 4px 15px rgba(93, 64, 55, 0.4);
+            transition: 0.3s; border: none;
+        }
+        .floating-chat-btn:hover { transform: scale(1.1); background: var(--primary); }
+
+        /* GLITTER */
+        #glitter-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
+        .glitter-particle { position: absolute; top: -10px; opacity: 0; background: radial-gradient(circle, #FFD700 0%, #D4AF37 100%); border-radius: 50%; box-shadow: 0 0 6px rgba(255, 215, 0, 0.8); }
+        @keyframes premiumFall { 0% { opacity: 0; transform: translateY(0) scale(0); } 20% { opacity: 1; transform: translateY(20vh) scale(1); } 100% { opacity: 0; transform: translateY(100vh) scale(0.5); } }
+
+        /* NAV */
+        nav#mainNav { background: var(--glass); backdrop-filter: blur(10px); padding: 20px 5%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(93, 64, 55, 0.1); }
+        .nav-links { display: flex; gap: 25px; list-style: none; }
+        .nav-links li { cursor: pointer; font-size: 0.8rem; font-weight: 500; text-transform: uppercase; }
+
+        /* SHOP & PRODUCT */
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .category-scroll { display: flex; gap: 15px; padding: 20px 5%; justify-content: center; position: sticky; top: 70px; z-index: 90; }
+        .cat-pill { padding: 8px 25px; border-radius: 50px; background: white; color: var(--accent); border: 1px solid #eee; font-size: 0.85rem; cursor: pointer; transition: 0.3s; font-weight: 500; }
+        .cat-pill.active { background: var(--accent); color: white; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 25px; margin-top: 30px; }
+        .product-card { background: white; border-radius: 0; overflow: hidden; transition: 0.4s; cursor: pointer; }
+        .prod-img-grid { width: 100%; height: 250px; object-fit: cover; }
+        .prod-info { padding: 15px; text-align: center; }
+
+        /* PRODUCT DETAIL */
+        #view-product-detail { background: var(--bg); min-height: 100vh; position: relative; z-index: 200; }
+        .p-header { position: sticky; top: 0; background: rgba(253, 252, 240, 0.95); padding: 20px; display: flex; align-items: center; gap: 20px; z-index: 10; color: var(--accent); }
+        .p-main-img { width: 100%; max-width: 400px; height: 400px; object-fit: cover; background: white; border: 3px solid var(--primary); }
+        
+        .p-details-box { padding: 20px 5%; max-width: 800px; margin: 0 auto; }
+        .p-price-big { color: var(--primary); font-size: 1.5rem; font-weight: bold; }
+        .shade-section { margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(93, 64, 55, 0.1); display:none; }
+        .shade-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+        .shade-pill { padding: 8px 20px; border: 1px solid var(--accent); cursor: pointer; font-size: 0.9rem; transition:0.3s; color: var(--accent); }
+        .shade-pill.selected-shade { background: var(--accent); color: white; }
+        
+        .p-bottom-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: white; display: flex; height: 70px; z-index: 300; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); }
+        .action-btn { flex: 1; border: none; font-weight: 500; font-size: 0.9rem; cursor: pointer; text-transform: uppercase; }
+        .btn-chat { width: 80px; background: white; color: var(--accent); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.7rem; gap: 5px; border-right: 1px solid #eee; }
+        .btn-cart { background: #EFEBE9; color: var(--accent); } 
+        .btn-buy { background: var(--accent); color: white; }
+
+        /* CART GROUPING */
+        .cart-shop-group { background: white; border: 1px solid #eee; border-radius: 8px; margin-bottom: 15px; overflow: hidden; }
+        .cart-shop-header { background: #fdfdfd; padding: 12px 15px; font-weight: bold; color: var(--accent); font-size: 0.9rem; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .cart-item { padding: 15px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; }
+        .chat-shop-btn { background: white; border: 1px solid var(--primary); color: var(--primary); padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; cursor: pointer; }
+
+        /* CHAT BUBBLES */
+        .chat-bubble { padding: 10px 15px; border-radius: 12px; margin-bottom: 8px; max-width: 80%; font-size: 0.9rem; clear: both; }
+        .chat-me { background: var(--primary); color: white; float: right; border-bottom-right-radius: 0; }
+        .chat-admin { background: #eee; color: #333; float: left; border-bottom-left-radius: 0; }
+
+        /* MODALS */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(62, 39, 35, 0.4); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(3px); }
+        .modal-box { background: #FFFBF7; padding: 40px; width: 400px; max-width: 90%; position: relative; animation: slideUp 0.4s; box-shadow: 0 15px 40px rgba(0,0,0,0.1); border: 1px solid var(--primary); }
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .close-btn { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; cursor: pointer; color: #888; }
+        input, select, textarea { width: 100%; padding: 15px; margin-bottom: 15px; border: 1px solid #ddd; background: white; font-family: 'Poppins'; outline: none; }
+        .btn-submit { width: 100%; padding: 15px; background: var(--accent); color: white; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+
+        .view-section { display: none; animation: fadeIn 0.5s; }
+        .active-view { display: block; }
+        @media (max-width: 768px) { .nav-links { display: none; } .p-main-img { height: 300px; } .category-scroll { justify-content: flex-start; overflow-x: auto; } }
+    </style>
+</head>
+<body>
+    <div id="glitter-container"></div>
+    
+    <button class="floating-chat-btn" onclick="openChat()">
+        <i class="ph ph-messenger-logo"></i>
+    </button>
+
+    <nav id="mainNav">
+        <div style="font-size:1.5rem; font-family:'Playfair Display'; font-weight:700; color:var(--accent); cursor:pointer;" onclick="switchView('home')">NUDE & GLOW</div>
+        <ul class="nav-links"><li onclick="switchView('home')">Home</li><li onclick="switchView('shop')">Collection</li><li onclick="switchView('about')">Our Story</li></ul>
+        <div style="display:flex; gap:20px; align-items:center;">
+            <span id="userGreet" style="font-size:0.8rem; color:var(--primary); font-style:italic;"></span>
+            <i class="ph ph-user" style="font-size:1.4rem; cursor:pointer; color:var(--accent);" onclick="openAuth()"></i>
+            <div style="position:relative; cursor:pointer;" onclick="openCart()"><i class="ph ph-bag" style="font-size:1.4rem; color:var(--accent);"></i><span id="cartCount" style="font-size:0.6rem; background:var(--accent); color:white; border-radius:50%; width:16px; height:16px; display:flex; align-items:center; justify-content:center; position:absolute; top:-5px; right:-5px;">0</span></div>
+        </div>
+    </nav>
+
+    <div id="view-home" class="view-section active-view">
+        <div style="height:500px; background:linear-gradient(rgba(0,0,0,0.2),rgba(0,0,0,0.2)),url('https://images.unsplash.com/photo-1616683693504-3ea7e9ad6fec?q=80&w=1600') center/cover; display:flex; flex-direction:column; align-items:center; justify-content:center; color:white; text-align:center;">
+            <h1 style="font-size:3.5rem; text-shadow:0 2px 10px rgba(0,0,0,0.2); margin-bottom:10px;">Effortless Beauty.</h1>
+            <button onclick="switchView('shop')" style="padding:15px 40px; background:white; color:var(--accent); border:none; font-weight:600; cursor:pointer; letter-spacing:2px; text-transform:uppercase;">Shop Now</button>
+        </div>
+        <div class="container" style="text-align:center; padding-top:60px;"><h2 style="color:var(--accent); font-size:2rem;">Curated Favorites</h2><div id="home-products" class="product-grid"></div></div>
+    </div>
+
+    <div id="view-shop" class="view-section">
+        <div class="category-scroll"><div class="cat-pill active" onclick="filterShop('All',this)">View All</div><div class="cat-pill" onclick="filterShop('Skincare',this)">Skincare</div><div class="cat-pill" onclick="filterShop('Makeup',this)">Makeup</div><div class="cat-pill" onclick="filterShop('Body Care',this)">Body</div></div>
+        <div class="container"><div id="shop-products" class="product-grid"></div></div>
+    </div>
+
+    <div id="view-product-detail" class="view-section">
+        <div class="p-header"><div onclick="goBack()" style="cursor:pointer;"><i class="ph ph-arrow-left"></i> Back</div></div>
+        <div class="p-image-area"><img id="detailImg" src="" class="p-main-img"></div>
+        <div class="p-details-box">
+            <div id="detailName" style="font-size:2rem; font-family:'Playfair Display'; color:var(--accent);">Name</div><div id="detailPrice" class="p-price-big">₱0.00</div>
+            <p style="color:#666; line-height:1.7;">Premium quality. Authentic Nude & Glow product.</p>
+            <div id="shadeSection" class="shade-section"><div style="font-size:0.8rem; text-transform:uppercase; margin-bottom:10px; color:#888;">Select Variation</div><div class="shade-row" id="shadeRow"></div></div>
+        </div>
+        <div class="p-bottom-bar"><button class="action-btn btn-chat" onclick="openChat()"><i class="ph ph-chat-circle-dots"></i>Chat</button><button class="action-btn btn-cart" onclick="addToCartCurrent()">Add to Bag</button><button class="action-btn btn-buy" onclick="buyNowCurrent()">Buy Now</button></div>
+    </div>
+
+    <div id="cartModal" class="modal"><div class="modal-box"><span onclick="closeModal('cartModal')" style="float:right; cursor:pointer;">&times;</span><h2 style="color:var(--accent);">Your Bag</h2><div id="cartList" style="max-height:300px; overflow-y:auto; margin:20px 0;"></div><div style="border-top:1px solid #eee; padding-top:15px; display:flex; justify-content:space-between; font-weight:bold; color:var(--accent); font-size:1.2rem;"><span>Total</span><span>₱<span id="cartTotal">0</span></span></div><button class="btn-submit" style="margin-top:20px;" onclick="openCheckout()">PROCEED TO CHECKOUT</button></div></div>
+    
+    <div id="chatModal" class="modal">
+        <div class="modal-box" style="display:flex; flex-direction:column; height:500px; padding:0; overflow:hidden;">
+            <div style="background:var(--accent); color:white; padding:15px; display:flex; justify-content:space-between; align-items:center;">
+                <span>Seller Chat</span><span onclick="closeModal('chatModal')" style="cursor:pointer;">&times;</span>
+            </div>
+            <div id="chatHistory" style="flex:1; overflow-y:auto; padding:20px; background:#fff;"></div>
+            <div style="padding:15px; background:#fafafa; border-top:1px solid #eee;">
+                <p style="font-size:0.8rem; color:#888; margin-bottom:5px;">To: <b id="chatProdName">Seller</b></p>
+                <div style="display:flex; gap:10px;">
+                    <input type="text" id="chatMsg" placeholder="Type message..." style="margin:0; flex:1;">
+                    <button class="btn-submit" onclick="sendMessage()" style="width:auto; padding:0 20px;">SEND</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="authModal" class="modal"><div class="modal-box"><span onclick="closeModal('authModal')" style="float:right; cursor:pointer;">&times;</span><div id="loginForm"><h2 style="text-align:center;">Login</h2><input type="text" id="lUser" placeholder="Email"><input type="password" id="lPass" placeholder="Password"><button class="btn-submit" onclick="login()">LOG IN</button><p onclick="toggleAuth('reg')" style="text-align:center; margin-top:15px; font-size:0.8rem; cursor:pointer; color:#888;">Create an Account</p></div><div id="regForm" style="display:none;"><h2 style="text-align:center;">Register</h2><input type="text" id="rName" placeholder="Full Name"><input type="number" id="rPhone" placeholder="Mobile No."><input type="text" id="rEmail" placeholder="Email"><input type="password" id="rPass" placeholder="Password"><button class="btn-submit" onclick="register()">REGISTER</button><p onclick="toggleAuth('login')" style="text-align:center; margin-top:15px; font-size:0.8rem; cursor:pointer; color:#888;">Back to Login</p></div><div id="profileForm" style="display:none; text-align:center;"><h2 id="profileName">Hi!</h2><button class="btn-submit" onclick="logout()">Sign Out</button></div></div></div>
+
+    <script>
+        setInterval(() => { const g = document.createElement('div'); g.classList.add('glitter-particle'); g.style.width=Math.random()*4+2+'px'; g.style.height=g.style.width; g.style.left=Math.random()*100+'%'; g.style.animation=`premiumFall ${Math.random()*5+5}s linear forwards`; document.getElementById('glitter-container').appendChild(g); setTimeout(()=>g.remove(),10000); }, 300);
+        let products=[], cart=[], currentUser=null, currentProduct=null, currentShade=null;
+        
+        function init(){ products = JSON.parse(localStorage.getItem('products')) || []; const savedUser = JSON.parse(localStorage.getItem('currentUser')); if(savedUser) { currentUser = savedUser; updateUI(); } renderGrid('home-products', products.slice(0,4)); renderGrid('shop-products', products); setInterval(() => { if(document.getElementById('chatModal').style.display === 'flex') { loadChatHistory(); } }, 2000); }
+        function renderGrid(elId, data) { const container = document.getElementById(elId); container.innerHTML = ''; data.forEach(p => { container.innerHTML += `<div class="product-card" onclick="viewProduct(${p.id})"><img src="${p.img}" class="prod-img-grid"><div class="prod-info"><div style="font-family:'Playfair Display'; font-weight:bold;">${p.name}</div><div>₱${p.price}</div></div></div>`; }); }
+        function filterShop(cat, btn) { document.querySelectorAll('.cat-pill').forEach(b => b.classList.remove('active')); btn.classList.add('active'); renderGrid('shop-products', cat === 'All' ? products : products.filter(p => p.cat === cat)); }
+        function switchView(v) { document.querySelectorAll('.view-section').forEach(el => el.style.display = 'none'); document.getElementById('view-' + v).style.display = 'block'; window.scrollTo(0,0); }
+        function goBack() { switchView('shop'); }
+        function viewProduct(id) { currentProduct = products.find(p => p.id === id); if(!currentProduct) return; currentShade = null; document.getElementById('detailImg').src = currentProduct.img; document.getElementById('detailPrice').innerText = '₱' + currentProduct.price; document.getElementById('detailName').innerText = currentProduct.name; switchView('product-detail'); }
+        function addToCartCurrent() { if(!currentUser) return openAuth(); const itemToAdd = {...currentProduct, selectedShade: currentShade || "Standard"}; cart.push(itemToAdd); updateCartCount(); alert("Added to Bag!"); }
+        function updateCartCount() { document.getElementById('cartCount').innerText = cart.length; }
+        
+        function openCart() { 
+            document.getElementById('cartModal').style.display='flex'; 
+            const list=document.getElementById('cartList'); list.innerHTML=''; 
+            if(cart.length==0) { list.innerHTML='<p style="text-align:center; color:#888;">Empty bag.</p>'; document.getElementById('cartTotal').innerText=0; return; }
+            const grouped = {}; let total = 0;
+            cart.forEach((item, index) => { total += item.price; if(!grouped[item.sellerShop]) grouped[item.sellerShop] = []; grouped[item.sellerShop].push({...item, originalIndex: index}); });
+            document.getElementById('cartTotal').innerText=total;
+            for (const [shopName, items] of Object.entries(grouped)) {
+                let itemsHtml = items.map(i => `<div class="cart-item"><div><b>${i.name}</b></div><div>₱${i.price} <b onclick="removeItem(${i.originalIndex})" style="color:red; cursor:pointer; margin-left:5px;">&times;</b></div></div>`).join('');
+                list.innerHTML += `<div class="cart-shop-group"><div class="cart-shop-header"><span>${shopName}</span><button class="chat-shop-btn" onclick="openChat('${shopName}')">Chat Shop</button></div>${itemsHtml}</div>`;
+            }
+        }
+        function removeItem(index) { cart.splice(index, 1); openCart(); updateCartCount(); }
+        function openChat(shopName) { if(!currentUser) return openAuth(); const target = shopName || (currentProduct ? currentProduct.sellerShop : "Seller"); document.getElementById('chatProdName').innerText = target; document.getElementById('chatModal').style.display = 'flex'; loadChatHistory(); }
+        function loadChatHistory() { const chats = JSON.parse(localStorage.getItem('chats')) || []; const myChats = chats.filter(c => c.customer === currentUser.name); const history = document.getElementById('chatHistory'); history.innerHTML = myChats.map(c => `<div style="overflow:hidden;"><div class="chat-bubble ${c.sender === 'Admin' ? 'chat-admin' : 'chat-me'}">${c.msg}</div></div>`).join(''); history.scrollTop = history.scrollHeight; }
+        function sendMessage() { const msg = document.getElementById('chatMsg').value; if(!msg) return; const chats = JSON.parse(localStorage.getItem('chats')) || []; chats.push({ customer: currentUser.name, sender: currentUser.name, msg: msg, date: new Date().toLocaleString() }); localStorage.setItem('chats', JSON.stringify(chats)); document.getElementById('chatMsg').value = ""; loadChatHistory(); }
+        function openAuth(){ document.getElementById('authModal').style.display='flex'; if(currentUser){toggleAuth('profile');document.getElementById('profileName').innerText="Hello "+currentUser.name;}else toggleAuth('login'); }
+        function toggleAuth(m){ ['loginForm','regForm','profileForm'].forEach(f=>document.getElementById(f).style.display='none'); document.getElementById(m+'Form').style.display='block'; }
+        function register(){ const n=document.getElementById('rName').value, ph=document.getElementById('rPhone').value, e=document.getElementById('rEmail').value, p=document.getElementById('rPass').value; if(!n||!ph||!e||!p)return alert("Fill all"); const u=JSON.parse(localStorage.getItem('users'))||[]; u.push({name:n,phone:ph,email:e,pass:p}); localStorage.setItem('users',JSON.stringify(u)); alert("Registered!"); toggleAuth('login'); }
+        function login(){ const e=document.getElementById('lUser').value, p=document.getElementById('lPass').value; const u=(JSON.parse(localStorage.getItem('users'))||[]).find(x=>x.email==e&&x.pass==p); if(u){ currentUser=u; localStorage.setItem('currentUser',JSON.stringify(u)); closeModal('authModal'); updateUI(); alert("Welcome!"); } else alert("Invalid"); }
+        function logout(){ currentUser=null; localStorage.removeItem('currentUser'); cart=[]; updateCartCount(); closeModal('authModal'); updateUI(); location.reload(); }
+        function updateUI(){ document.getElementById('userGreet').innerText = currentUser ? "Hi, " + currentUser.name.split(' ')[0] : ""; }
+        function closeModal(id){ document.getElementById(id).style.display='none'; }
+        init();
+    </script>
+</body>
+</html>
